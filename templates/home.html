@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Discover upcoming auditions and competitions on StarNova.">
+    <title>StarNova | Discover opportunities</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=tdz_fix">
+    <script src="{{ url_for('static', filename='js/app.js') }}?v=tdz_fix" defer></script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="page-shell nav-content">
+            <a class="brand" href="/" aria-label="StarNova home">StarNova</a>
+            <nav id="primary-nav" class="primary-nav" aria-label="Primary navigation">
+                <a class="nav-link is-current" href="/">Discover</a>
+                <a class="nav-link" href="#opportunities">Opportunities</a>
+                <div id="nav-auth-container" class="nav-auth-group">
+                    <button id="nav-login-btn" class="nav-link nav-btn" type="button">Login</button>
+                    <button id="nav-signup-btn" class="button button-primary button-sm" type="button">Sign Up</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="page-shell hero-content">
+                <p class="eyebrow">Your next stage starts here</p>
+                <h1>Find auditions and competitions worth showing up for.</h1>
+                <p class="hero-copy">Explore current opportunities across acting, music, and dance.</p>
+                <a class="button button-primary" href="#opportunities">Browse opportunities</a>
+            </div>
+        </section>
+
+        <section class="page-shell discovery-section" id="opportunities" aria-labelledby="opportunities-title">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Opportunity discovery</p>
+                    <h2 id="opportunities-title">Upcoming opportunities</h2>
+                </div>
+                <p id="result-summary" class="result-summary" aria-live="polite"></p>
+            </div>
+
+            <form id="filter-form" class="filter-panel" novalidate autocomplete="off">
+                <div class="field search-field">
+                    <label for="search-input">Search opportunities</label>
+                    <input id="search-input" name="q" type="search" placeholder="Title, venue, or keyword">
+                </div>
+                <div class="field">
+                    <label for="type-filter">Opportunity type</label>
+                    <select id="type-filter" name="type">
+                        <option value="">All types</option>
+                        <option value="audition">Auditions</option>
+                        <option value="competition">Competitions</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="category-filter">Category</label>
+                    <select id="category-filter" name="category">
+                        <option value="">All categories</option>
+                        <option value="acting">Acting</option>
+                        <option value="music">Music</option>
+                        <option value="dance">Dance</option>
+                    </select>
+                </div>
+                <div class="filter-actions">
+                    <button class="button button-primary" type="submit">Search</button>
+                    <button id="clear-filters" class="button button-secondary" type="button">Clear filters</button>
+                </div>
+            </form>
+
+            <div id="loading-state" class="state-panel" role="status" hidden>
+                <span class="loading-dot" aria-hidden="true"></span>
+                <p>Loading opportunities…</p>
+            </div>
+            <div id="error-state" class="state-panel state-error" role="alert" hidden>
+                <h3>We couldn’t load opportunities</h3>
+                <p id="error-message">Please try again in a moment.</p>
+                <button id="retry-button" class="button button-secondary" type="button">Try again</button>
+            </div>
+            <div id="empty-state" class="state-panel" hidden>
+                <h3>No opportunities found</h3>
+                <p>Try changing your search or clearing the filters.</p>
+            </div>
+            <div id="opportunity-list" class="opportunity-grid" aria-live="polite" aria-busy="true"></div>
+        </section>
+
+        <section class="page-shell my-applications-section" id="my-applications" aria-labelledby="my-applications-title" hidden>
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Applicant Dashboard</p>
+                    <h2 id="my-applications-title">My Applications</h2>
+                </div>
+                <p id="my-apps-summary" class="result-summary" aria-live="polite"></p>
+            </div>
+
+            <div id="my-apps-loading" class="state-panel" role="status" hidden>
+                <span class="loading-dot" aria-hidden="true"></span>
+                <p>Loading your applications…</p>
+            </div>
+            <div id="my-apps-error" class="state-panel state-error" role="alert" hidden>
+                <h3>We couldn’t load your applications</h3>
+                <p id="my-apps-error-message">Please try again in a moment.</p>
+                <button id="my-apps-retry-button" class="button button-secondary" type="button">Try again</button>
+            </div>
+            <div id="my-apps-empty" class="state-panel" hidden>
+                <h3>No applications yet</h3>
+                <p>You haven’t submitted any applications yet. Browse upcoming opportunities and apply to get started!</p>
+                <a class="button button-primary" href="#opportunities" id="browse-from-empty">Browse opportunities</a>
+            </div>
+            <div id="my-apps-list" class="my-applications-grid" aria-live="polite" aria-busy="true"></div>
+        </section>
+
+        <section class="page-shell organizer-dashboard-section" id="organizer-dashboard" aria-labelledby="organizer-dashboard-title" hidden>
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Organizer Portal</p>
+                    <h2 id="organizer-dashboard-title">Organizer Dashboard</h2>
+                </div>
+                <div class="header-action-group">
+                    <p id="organizer-summary" class="result-summary" aria-live="polite"></p>
+                    <button id="create-opportunity-btn" class="button button-primary" type="button">+ Create Opportunity</button>
+                </div>
+            </div>
+
+            <div id="organizer-loading" class="state-panel" role="status" hidden>
+                <span class="loading-dot" aria-hidden="true"></span>
+                <p>Loading your posted opportunities…</p>
+            </div>
+            <div id="organizer-error" class="state-panel state-error" role="alert" hidden>
+                <h3>We couldn’t load your opportunities</h3>
+                <p id="organizer-error-message">Please try again in a moment.</p>
+                <button id="organizer-retry-button" class="button button-secondary" type="button">Try again</button>
+            </div>
+            <div id="organizer-empty" class="state-panel" hidden>
+                <h3>No opportunities posted yet</h3>
+                <p>You haven’t created any auditions or competitions yet. Click below to publish your first opportunity!</p>
+                <button id="create-first-opportunity-btn" class="button button-primary" type="button">+ Create Opportunity</button>
+            </div>
+            <div id="organizer-list" class="opportunity-grid" aria-live="polite" aria-busy="true"></div>
+        </section>
+    </main>
+
+    <dialog id="opportunity-dialog" class="opportunity-dialog" aria-labelledby="detail-title">
+        <div class="dialog-header">
+            <p class="eyebrow">Opportunity details</p>
+            <button id="close-detail" class="icon-button" type="button" aria-label="Close opportunity details">×</button>
+        </div>
+        <div id="detail-content" class="detail-content" aria-live="polite"></div>
+    </dialog>
+
+    <dialog id="opportunity-form-dialog" class="opportunity-form-dialog" aria-labelledby="opp-form-title">
+        <div class="dialog-header">
+            <div>
+                <p class="eyebrow">Organizer Management</p>
+                <h2 id="opp-form-title" class="dialog-title">Create Opportunity</h2>
+            </div>
+            <button id="close-opp-form" class="icon-button" type="button" aria-label="Close dialog">×</button>
+        </div>
+        <div class="application-panel">
+            <div id="opportunity-form-error" class="auth-banner auth-banner-error" hidden role="alert"></div>
+            <form id="opportunity-form" novalidate autocomplete="off">
+                <div class="field">
+                    <label for="post-title">Opportunity Title <span class="required-star">*</span></label>
+                    <input id="post-title" name="title" type="text" placeholder="e.g. Campus Film Audition 2026" required maxlength="200">
+                </div>
+                <div class="grid-2-col">
+                    <div class="field">
+                        <label for="post-type">Opportunity Type <span class="required-star">*</span></label>
+                        <select id="post-type" name="opportunity_type" required>
+                            <option value="audition">Audition</option>
+                            <option value="competition">Competition</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="post-category">Category <span class="required-star">*</span></label>
+                        <select id="post-category" name="category" required>
+                            <option value="acting">Acting</option>
+                            <option value="music">Music</option>
+                            <option value="dance">Dance</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="post-event-date">Event Date <span class="required-star">*</span></label>
+                    <input id="post-event-date" name="event_date" type="date" required>
+                </div>
+                <div class="grid-2-col">
+                    <div class="field">
+                        <label for="post-start-time">Start Time <span class="optional-tag">(Optional)</span></label>
+                        <input id="post-start-time" name="start_time" type="time">
+                    </div>
+                    <div class="field">
+                        <label for="post-end-time">End Time <span class="optional-tag">(Optional)</span></label>
+                        <input id="post-end-time" name="end_time" type="time">
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="post-venue">Venue <span class="required-star">*</span></label>
+                    <input id="post-venue" name="venue" type="text" placeholder="e.g. Main Auditorium, City Center" required maxlength="255">
+                </div>
+                <div class="field">
+                    <label for="post-description">Description <span class="optional-tag">(Optional)</span></label>
+                    <textarea id="post-description" name="description" rows="4" placeholder="Provide details about role requirements, rules, or eligibility..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button id="post-submit-btn" class="button button-primary" type="submit">Save Opportunity</button>
+                    <button id="post-cancel-btn" class="button button-secondary" type="button">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog id="applicants-dialog" class="applicants-dialog" aria-labelledby="applicants-title">
+        <div class="dialog-header">
+            <div>
+                <p class="eyebrow">Applicant Review</p>
+                <h2 id="applicants-title" class="dialog-title">Applications</h2>
+            </div>
+            <button id="close-applicants" class="icon-button" type="button" aria-label="Close applicants dialog">×</button>
+        </div>
+        <div class="application-panel">
+            <p id="applicants-summary" class="result-summary" aria-live="polite"></p>
+            <div id="applicants-error" class="auth-banner auth-banner-error" hidden role="alert"></div>
+            <div id="applicants-loading" class="state-panel" role="status" hidden>
+                <span class="loading-dot" aria-hidden="true"></span>
+                <p>Loading applicants…</p>
+            </div>
+            <div id="applicants-empty" class="state-panel" hidden>
+                <h3>No applications submitted yet</h3>
+                <p>No participants have applied to this opportunity yet.</p>
+            </div>
+            <div id="applicants-list" class="applicants-list-container" aria-live="polite"></div>
+        </div>
+    </dialog>
+
+    <dialog id="application-dialog" class="application-dialog" aria-labelledby="application-dialog-title">
+        <div class="dialog-header">
+            <div>
+                <p class="eyebrow">Submit Application</p>
+                <h2 id="application-dialog-title" class="dialog-title">Apply to Opportunity</h2>
+            </div>
+            <button id="close-application" class="icon-button" type="button" aria-label="Close application dialog">×</button>
+        </div>
+        <div class="application-panel">
+            <p id="app-opportunity-title-display" class="app-opportunity-subtitle"></p>
+            <div id="application-error" class="auth-banner auth-banner-error" hidden role="alert"></div>
+            <form id="application-form" novalidate autocomplete="off">
+                <div class="field">
+                    <label for="app-experience">Experience & Background <span class="required-star">*</span></label>
+                    <textarea id="app-experience" name="experience" rows="4" placeholder="Describe your relevant experience, skills, and background..." required maxlength="5000"></textarea>
+                </div>
+                <div class="field">
+                    <label for="app-portfolio">Portfolio URL <span class="optional-tag">(Optional)</span></label>
+                    <input id="app-portfolio" name="portfolio_url" type="url" placeholder="https://yourportfolio.com or https://youtube.com/..." maxlength="500">
+                </div>
+                <div class="form-actions">
+                    <button id="app-submit-btn" class="button button-primary" type="submit">Submit Application</button>
+                    <button id="app-cancel-btn" class="button button-secondary" type="button">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog id="auth-dialog" class="auth-dialog" aria-labelledby="auth-dialog-title">
+        <div class="dialog-header">
+            <h2 id="auth-dialog-title" class="auth-dialog-title">Welcome to StarNova</h2>
+            <button id="close-auth" class="icon-button" type="button" aria-label="Close dialog">×</button>
+        </div>
+        <div class="auth-tabs" role="tablist">
+            <button id="tab-login" class="auth-tab is-active" type="button" role="tab" aria-selected="true">Log In</button>
+            <button id="tab-register" class="auth-tab" type="button" role="tab" aria-selected="false">Sign Up</button>
+        </div>
+
+        <!-- Login Panel -->
+        <div id="login-panel" class="auth-panel" role="tabpanel">
+            <div id="login-error" class="auth-banner auth-banner-error" hidden role="alert"></div>
+            <form id="login-form" novalidate autocomplete="off">
+                <div class="field">
+                    <label for="login-email">Email address</label>
+                    <input id="login-email" name="email" type="email" placeholder="you@example.com" required>
+                </div>
+                <div class="field">
+                    <label for="login-password">Password</label>
+                    <input id="login-password" name="password" type="password" placeholder="Enter your password" required>
+                </div>
+                <button class="button button-primary auth-submit" type="submit">Log In</button>
+            </form>
+            <p class="auth-switch-prompt">Don't have an account? <button id="switch-to-register" class="link-button" type="button">Sign up</button></p>
+        </div>
+
+        <!-- Register Panel -->
+        <div id="register-panel" class="auth-panel" hidden role="tabpanel">
+            <div id="register-error" class="auth-banner auth-banner-error" hidden role="alert"></div>
+            <div id="register-success" class="auth-banner auth-banner-success" hidden role="status"></div>
+            <form id="register-form" novalidate autocomplete="off">
+                <div class="field">
+                    <label for="register-name">Full name</label>
+                    <input id="register-name" name="name" type="text" placeholder="Jane Doe" required>
+                </div>
+                <div class="field">
+                    <label for="register-email">Email address</label>
+                    <input id="register-email" name="email" type="email" placeholder="you@example.com" required>
+                </div>
+                <div class="field">
+                    <label for="register-password">Password (min. 8 characters)</label>
+                    <input id="register-password" name="password" type="password" placeholder="Create a password" required minlength="8">
+                </div>
+                <div class="field">
+                    <label for="register-confirm-password">Confirm Password</label>
+                    <input id="register-confirm-password" name="confirmPassword" type="password" placeholder="Re-enter password" required>
+                </div>
+                <div class="field">
+                    <label>I want to register as</label>
+                    <div class="role-selector">
+                        <label class="role-option">
+                            <input type="radio" id="role-applicant" name="role" value="user" checked>
+                            <span class="role-card">
+                                <strong>Applicant</strong>
+                                <small>Discover & apply for auditions/competitions</small>
+                            </span>
+                        </label>
+                        <label class="role-option">
+                            <input type="radio" id="role-organizer" name="role" value="organizer">
+                            <span class="role-card">
+                                <strong>Organizer</strong>
+                                <small>Post and manage opportunities</small>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <button class="button button-primary auth-submit" type="submit">Create Account</button>
+            </form>
+            <p class="auth-switch-prompt">Already have an account? <button id="switch-to-login" class="link-button" type="button">Log in</button></p>
+        </div>
+    </dialog>
+
+    <footer class="site-footer">
+        <div class="page-shell">StarNova · Discover your next performance opportunity.</div>
+    </footer>
+</body>
+</html>

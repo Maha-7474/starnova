@@ -1,0 +1,8 @@
+# Local environment variables may contain database credentials.
+.env
+
+# Python bytecode and pytest's local test cache are generated files.
+__pycache__/
+.pytest_cache/
+*.pyc
+.chrome-test-profile/
